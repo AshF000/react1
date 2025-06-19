@@ -1,8 +1,7 @@
 import React from "react";
 
 const Button = React.forwardRef(({ work, onClick, css }, ref) => {
-  const design =
-    css + " text-black py-2 px-4 rounded-md transition duration-150";
+  const design =" text-black py-2 px-4 rounded-md transition duration-150 " + css;
 
   return (
     <>

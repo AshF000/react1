@@ -3,28 +3,44 @@ import Input from "./Components/Input";
 import Button from "./Components/Button";
 import FirebaseError from "./firebase.config";
 
-import { getDatabase, ref, set, push, onValue } from "firebase/database";
+import {
+  getDatabase,
+  ref,
+  set,
+  push,
+  onValue,
+  remove,
+  update,
+} from "firebase/database";
 
 const ToDo = () => {
+  const db = getDatabase();
   const inputRef = useRef(null);
   const buttonRef = useRef(null);
 
   const [todoList, setTodoList] = useState([]);
   const [inpVal, setInpVal] = useState("");
+  const [todoAdded, setTodoAdded] = useState(true);
+  const [edit, setEdit] = useState(false);
+  const [modalVal, setModalVal] = useState("");
+  const [idToBeEdited, setIdToBeEdited] = useState("")
 
   useEffect(() => {
     // onValue
-    const db = getDatabase();
     const todoRef = ref(db, "tasks");
     onValue(todoRef, (e) => {
       // const s = e
-      let temp = []
-      e.forEach((e) => {
-        temp.push(e.val().task)
+      let temp = [];
+      e.forEach((i) => {
+        let tempObj = {
+          id: i.key,
+          task: i.val().task,
+        };
+        temp.push(tempObj);
       });
       setTodoList(temp);
     });
-  }, []);
+  }, [todoAdded]);
 
   const handleAddTodo = () => {
     let a = inpVal.trim();
@@ -32,11 +48,31 @@ const ToDo = () => {
       setTodoList([...todoList, a]);
       setInpVal("");
       inputRef.current.focus();
-      const db = getDatabase();
       set(push(ref(db, "tasks/")), {
         task: a,
-      });
+      }).then(setTodoAdded(!todoAdded));
     }
+  };
+
+  const openModal = (e) => {
+    setIdToBeEdited(e.id)
+    setEdit(true);
+    setModalVal(e.task);
+  };
+
+  const handleEditTodo = (e, v) => {
+    console.log(e.id);
+    console.log(v);
+
+    const todoRef = ref(db, "tasks/" + e.id);
+    update(todoRef, {task: v})
+    .then(()=>{console.log("update hoise")})
+    setEdit(false);
+  };
+
+  const handleRemoveTodo = (e) => {
+    const todoRef = ref(db, "tasks/" + e);
+    remove(todoRef);
   };
 
   const handleKeyPress = (e) => {
@@ -68,10 +104,64 @@ const ToDo = () => {
             css={`bg-white`}
           />
         </div>
-        <div className="w-4/12 bg-white shadow-custom p-2 rounded h-[180px] overflow-scroll">
+        <div className=" w-4/12 bg-white shadow-custom p-2 rounded h-[180px] overflow-scroll">
           <ul className="list-disc ml-5">
-            {todoList.map((todo, index) => (
-              <li key={index}>{`${todo}`}</li>
+            {todoList.map((todo) => (
+              <div key={todo.id} className="relative flex justify-between">
+                {edit && todo.id==idToBeEdited? (
+                  <div
+                    id="modal"
+                    className="w-full h-full absolute top-0 left-0 bg-black flex !rounded-lg"
+                  >
+                    <div className="w-10/12 rounded">
+                      <Input
+                        ref={null}
+                        value={modalVal}
+                        onKeyDown={null}
+                        onChange={(e) => {
+                          setModalVal(e.target.value);
+                        }}
+                        css={`w-full h-full absolute !text-left !text-[14px] pl-1 py-1`}
+                      />
+                    </div>
+                    <div className="flex justify-evenly w-2/12 z-10 items-center ">
+                      <Button
+                        onClick={() => {
+                          handleEditTodo(todo, modalVal);
+                        }}
+                        work={`OK`}
+                        css={`shadow-custom border border-blue-700 text-blue-700 !rounded-[50%] bg-white !p-0 !h-[18px] !w-[18px] text-[9px] font-bold`}
+                      />
+                      <Button
+                        onClick={() => {
+                          setEdit(false);
+                        }}
+                        work={`x`}
+                        css={`shadow-custom border border-red-700 text-red-700 !rounded-[50%] bg-white !p-0 !h-[18px] !w-[18px] text-[10px] font-bold`}
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  ""
+                )}
+                <li>{`${todo.task}`}</li>
+                <div className="flex w-2/12 justify-evenly">
+                  <Button
+                    onClick={() => {
+                      openModal(todo);
+                    }}
+                    work={`/`}
+                    css={`shadow-custom border border-blue-700 text-blue-700 !rounded-[50%] bg-white !p-0 !h-[18px] !w-[18px] text-[10px] font-bold`}
+                  />
+                  <Button
+                    onClick={() => {
+                      handleRemoveTodo(todo.id);
+                    }}
+                    work={`x`}
+                    css={`shadow-custom border border-red-700 text-red-700 !rounded-[50%] bg-white !p-0 !h-[18px] !w-[18px] text-[10px] font-bold`}
+                  />
+                </div>
+              </div>
             ))}
           </ul>
         </div>
