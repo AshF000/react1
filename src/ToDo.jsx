@@ -23,7 +23,7 @@ const ToDo = () => {
   const [todoAdded, setTodoAdded] = useState(true);
   const [edit, setEdit] = useState(false);
   const [modalVal, setModalVal] = useState("");
-  const [idToBeEdited, setIdToBeEdited] = useState("")
+  const [idToBeEdited, setIdToBeEdited] = useState("");
 
   useEffect(() => {
     // onValue
@@ -45,7 +45,7 @@ const ToDo = () => {
   const handleAddTodo = () => {
     let a = inpVal.trim();
     if (a !== "") {
-      setTodoList([...todoList, a]);
+      // setTodoList([...todoList, a]);
       setInpVal("");
       inputRef.current.focus();
       set(push(ref(db, "tasks/")), {
@@ -65,8 +65,9 @@ const ToDo = () => {
     console.log(v);
 
     const todoRef = ref(db, "tasks/" + e.id);
-    update(todoRef, {task: v})
-    .then(()=>{console.log("update hoise")})
+    update(todoRef, { task: v }).then(() => {
+      console.log("update hoise");
+    });
     setEdit(false);
   };
 
@@ -108,7 +109,7 @@ const ToDo = () => {
           <ul className="list-disc ml-5">
             {todoList.map((todo) => (
               <div key={todo.id} className="relative flex justify-between">
-                {edit && todo.id==idToBeEdited? (
+                {edit && todo.id == idToBeEdited ? (
                   <div
                     id="modal"
                     className="w-full h-full absolute top-0 left-0 bg-black flex !rounded-lg"
