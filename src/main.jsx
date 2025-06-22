@@ -13,12 +13,12 @@ import Vid from "./Vid.jsx";
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <Vid />
+    <ToDoReducer />
     <Greetings />
     <ColorPicker />
     <Counter />
     <CounterReducer />
     <DynamicHeading />
     <ToDo />
-    <ToDoReducer />
   </StrictMode>
 );
