@@ -5,7 +5,6 @@ const Input = React.forwardRef(({ placeholder, value, onChange, css, onKeyDown }
     "text-center text-xl font-mono bg-gray-400 border border-gray-400 rounded-lg px-4 py-2 outline-0 shadow-inner";
 
   return (
-    <div>
       <input
         ref={ref}
         onKeyDown={onKeyDown}
@@ -16,7 +15,6 @@ const Input = React.forwardRef(({ placeholder, value, onChange, css, onKeyDown }
         value={value}
         onChange={onChange}
       />
-    </div>
   );
 });
 

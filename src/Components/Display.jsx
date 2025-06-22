@@ -6,7 +6,9 @@ const Display = ({ msg, css}) => {
 
   return (
       <div className={`${design} ${css}`}>
-        <h3>{msg}</h3>
+        <span>
+          {msg}
+          </span>
       </div>
   );
 };
